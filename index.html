@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Odtwarzacz MP3/MP4</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #121212;
+    color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+
+  h1 {
+    margin-bottom: 20px;
+    font-weight: normal;
+  }
+
+  input[type="file"] {
+    margin: 10px 0 20px;
+    padding: 10px 15px;
+    background: #333;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  input[type="file"]:hover {
+    background: #444;
+  }
+
+  audio, video {
+    display: none;
+    background: #000;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+    outline: none;
+  }
+
+  audio {
+    width: 300px;
+  }
+
+  video {
+    max-width: 80vw;   /* max 80% szerokości ekranu */
+    max-height: 60vh;  /* max 60% wysokości ekranu */
+  }
+</style>
+</head>
+<body>
+
+<h1>🎵 Odtwarzacz MP3 / MP4</h1>
+<p>Wybierz plik z dysku:</p>
+
+<input type="file" id="fileInput" accept="audio/*,video/*">
+
+<audio id="audioPlayer" controls></audio>
+<video id="videoPlayer" controls></video>
+
+<script>
+const fileInput = document.getElementById('fileInput');
+const audioPlayer = document.getElementById('audioPlayer');
+const videoPlayer = document.getElementById('videoPlayer');
+
+fileInput.addEventListener('change', function(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const url = URL.createObjectURL(file);
+
+  // Ukryj oba odtwarzacze
+  audioPlayer.style.display = 'none';
+  videoPlayer.style.display = 'none';
+
+  if (file.type.startsWith('audio/')) {
+    audioPlayer.src = url;
+    audioPlayer.style.display = 'block';
+    audioPlayer.play();
+  } 
+  else if (file.type.startsWith('video/')) {
+    videoPlayer.src = url;
+    videoPlayer.style.display = 'block';
+    videoPlayer.play();
+  } 
+  else {
+    alert('Nieobsługiwany format. Wybierz plik MP3 lub MP4.');
+  }
+});
+</script>
+
+</body>
+</html>
