@@ -18,12 +18,13 @@
   }
 
   h1 {
-    margin-bottom: 20px;
-    font-weight: normal;
+    margin-bottom: 10px;
   }
 
-  input[type="file"] {
-    margin: 10px 0 20px;
+  input[type="file"],
+  input[type="text"],
+  button {
+    margin: 10px 0;
     padding: 10px 15px;
     background: #333;
     color: #fff;
@@ -33,8 +34,15 @@
     transition: background 0.3s;
   }
 
-  input[type="file"]:hover {
+  input[type="file"]:hover,
+  button:hover {
     background: #444;
+  }
+
+  input[type="text"] {
+    width: 300px;
+    background: #1e1e1e;
+    color: #f0f0f0;
   }
 
   audio, video {
@@ -42,7 +50,7 @@
     background: #000;
     border-radius: 10px;
     box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
-    outline: none;
+    margin-top: 20px;
   }
 
   audio {
@@ -50,49 +58,115 @@
   }
 
   video {
-    max-width: 80vw;   /* max 80% szerokości ekranu */
-    max-height: 60vh;  /* max 60% wysokości ekranu */
+    max-width: 80vw;
+    max-height: 60vh;
+  }
+
+  .controls {
+    display: none;
+    margin-top: 15px;
+    text-align: center;
+  }
+
+  .volume-control {
+    width: 200px;
+  }
+
+  .source-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 </style>
 </head>
 <body>
 
-<h1>🎵 Odtwarzacz MP3 / MP4</h1>
-<p>Wybierz plik z dysku:</p>
+<h1>🎶 Odtwarzacz MP3 / MP4</h1>
 
-<input type="file" id="fileInput" accept="audio/*,video/*">
+<div class="source-block">
+  <input type="file" id="fileInput" accept="audio/*,video/*">
+  <input type="text" id="urlInput" placeholder="Wklej link do MP3 lub MP4">
+  <button id="loadButton">Odtwórz z linku</button>
+</div>
 
-<audio id="audioPlayer" controls></audio>
-<video id="videoPlayer" controls></video>
+<audio id="audioPlayer" controls controlsList="nodownload"></audio>
+<video id="videoPlayer" controls controlsList="nodownload"></video>
+
+<div class="controls" id="customControls">
+  🔊 Głośność:
+  <input type="range" id="volumeSlider" class="volume-control" min="0" max="1" step="0.01" value="1">
+</div>
 
 <script>
 const fileInput = document.getElementById('fileInput');
+const urlInput = document.getElementById('urlInput');
+const loadButton = document.getElementById('loadButton');
 const audioPlayer = document.getElementById('audioPlayer');
 const videoPlayer = document.getElementById('videoPlayer');
+const volumeSlider = document.getElementById('volumeSlider');
+const customControls = document.getElementById('customControls');
 
+// Funkcja resetująca odtwarzacze
+function resetPlayers() {
+  audioPlayer.style.display = 'none';
+  videoPlayer.style.display = 'none';
+  customControls.style.display = 'none';
+  audioPlayer.pause();
+  videoPlayer.pause();
+}
+
+// Obsługa pliku z dysku
 fileInput.addEventListener('change', function(event) {
   const file = event.target.files[0];
   if (!file) return;
-
   const url = URL.createObjectURL(file);
+  playSource(url, file.type);
+});
 
-  // Ukryj oba odtwarzacze
-  audioPlayer.style.display = 'none';
-  videoPlayer.style.display = 'none';
+// Obsługa linku z internetu
+loadButton.addEventListener('click', function() {
+  const url = urlInput.value.trim();
+  if (!url) {
+    alert('Wklej link do pliku MP3 lub MP4.');
+    return;
+  }
 
-  if (file.type.startsWith('audio/')) {
+  // Rozpoznanie typu na podstawie rozszerzenia
+  if (url.endsWith('.mp3') || url.includes('audio')) {
+    playSource(url, 'audio/mpeg');
+  } else if (url.endsWith('.mp4') || url.includes('video')) {
+    playSource(url, 'video/mp4');
+  } else {
+    alert('Nie można rozpoznać typu pliku. Upewnij się, że to MP3 lub MP4.');
+  }
+});
+
+// Wspólna funkcja do odtwarzania źródła
+function playSource(url, type) {
+  resetPlayers();
+
+  if (type.startsWith('audio/')) {
     audioPlayer.src = url;
     audioPlayer.style.display = 'block';
+    customControls.style.display = 'block';
     audioPlayer.play();
   } 
-  else if (file.type.startsWith('video/')) {
+  else if (type.startsWith('video/')) {
     videoPlayer.src = url;
     videoPlayer.style.display = 'block';
+    customControls.style.display = 'block';
     videoPlayer.play();
   } 
   else {
     alert('Nieobsługiwany format. Wybierz plik MP3 lub MP4.');
   }
+}
+
+// Regulacja głośności
+volumeSlider.addEventListener('input', function() {
+  const volume = parseFloat(this.value);
+  audioPlayer.volume = volume;
+  videoPlayer.volume = volume;
 });
 </script>
 
