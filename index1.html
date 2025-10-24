@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wideo testowe</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #121212;
+    color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+
+  h1 {
+    margin-bottom: 20px;
+  }
+
+  video, audio {
+    background: #000;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+    max-width: 80vw;
+    max-height: 60vh;
+  }
+
+  .controls {
+    margin-top: 15px;
+    text-align: center;
+  }
+
+  .volume-control {
+    width: 200px;
+  }
+</style>
+</head>
+<body>
+
+<h1>🎬 Testowy odtwarzacz</h1>
+
+<!-- Możesz zmienić link poniżej na własny MP4 lub MP3 -->
+<video id="player" controls controlsList="nodownload"></video>
+
+<div class="controls">
+  🔊 Głośność:
+  <input type="range" id="volumeSlider" class="volume-control" min="0" max="1" step="0.01" value="1">
+</div>
+
+<script>
+// 🔗 Tutaj wklej swój link do pliku MP4 lub MP3
+const fileURL = "https://www.w3schools.com/html/mov_bbb.mp4"; // przykładowy film MP4
+// const fileURL = "https://www.w3schools.com/html/horse.mp3"; // przykładowy dźwięk MP3
+
+const player = document.getElementById('player');
+const volumeSlider = document.getElementById('volumeSlider');
+
+// Sprawdź rozszerzenie pliku i wybierz odpowiedni odtwarzacz
+if (fileURL.endsWith('.mp3')) {
+  const audio = document.createElement('audio');
+  audio.src = fileURL;
+  audio.controls = true;
+  audio.controlsList = "nodownload";
+  audio.style.width = "300px";
+  document.body.replaceChild(audio, player);
+  volumeSlider.addEventListener('input', () => {
+    audio.volume = parseFloat(volumeSlider.value);
+  });
+  audio.play();
+} else {
+  player.src = fileURL;
+  volumeSlider.addEventListener('input', () => {
+    player.volume = parseFloat(volumeSlider.value);
+  });
+  player.play();
+}
+</script>
+
+</body>
+</html>
