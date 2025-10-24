@@ -45,21 +45,32 @@
     color: #f0f0f0;
   }
 
-  audio, video {
-    display: none;
+  /* Wrapper utrzymujący proporcje i dopasowujący rozmiar */
+  .player-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     background: #000;
     border-radius: 10px;
     box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+    max-width: 80vw;
+    max-height: 70vh;
     margin-top: 20px;
+  }
+
+  video {
+    width: 100%;
+    height: auto;
+    object-fit: contain; /* zachowuje proporcje i nie rozciąga */
+    border-radius: 10px;
   }
 
   audio {
     width: 300px;
-  }
-
-  video {
-    max-width: 80vw;
-    max-height: 60vh;
+    background: #000;
+    border-radius: 10px;
   }
 
   .controls {
@@ -89,8 +100,10 @@
   <button id="loadButton">Odtwórz z linku</button>
 </div>
 
-<audio id="audioPlayer" controls controlsList="nodownload"></audio>
-<video id="videoPlayer" controls controlsList="nodownload"></video>
+<div class="player-wrapper" id="playerWrapper">
+  <audio id="audioPlayer" controls controlsList="nodownload"></audio>
+  <video id="videoPlayer" controls controlsList="nodownload"></video>
+</div>
 
 <div class="controls" id="customControls">
   🔊 Głośność:
@@ -106,7 +119,11 @@ const videoPlayer = document.getElementById('videoPlayer');
 const volumeSlider = document.getElementById('volumeSlider');
 const customControls = document.getElementById('customControls');
 
-// Funkcja resetująca odtwarzacze
+// Ukrywamy audio i video na start
+audioPlayer.style.display = 'none';
+videoPlayer.style.display = 'none';
+
+// Reset
 function resetPlayers() {
   audioPlayer.style.display = 'none';
   videoPlayer.style.display = 'none';
@@ -123,7 +140,7 @@ fileInput.addEventListener('change', function(event) {
   playSource(url, file.type);
 });
 
-// Obsługa linku z internetu
+// Obsługa linku
 loadButton.addEventListener('click', function() {
   const url = urlInput.value.trim();
   if (!url) {
@@ -131,17 +148,17 @@ loadButton.addEventListener('click', function() {
     return;
   }
 
-  // Rozpoznanie typu na podstawie rozszerzenia
+  // Rozpoznaj typ
   if (url.endsWith('.mp3') || url.includes('audio')) {
     playSource(url, 'audio/mpeg');
   } else if (url.endsWith('.mp4') || url.includes('video')) {
     playSource(url, 'video/mp4');
   } else {
-    alert('Nie można rozpoznać typu pliku. Upewnij się, że to MP3 lub MP4.');
+    alert('Nie można rozpoznać typu. Wklej link do MP3 lub MP4.');
   }
 });
 
-// Wspólna funkcja do odtwarzania źródła
+// Wspólna funkcja do odtwarzania
 function playSource(url, type) {
   resetPlayers();
 
@@ -158,7 +175,7 @@ function playSource(url, type) {
     videoPlayer.play();
   } 
   else {
-    alert('Nieobsługiwany format. Wybierz plik MP3 lub MP4.');
+    alert('Nieobsługiwany format.');
   }
 }
 
